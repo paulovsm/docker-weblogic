@@ -8,6 +8,8 @@ ENV DEBIAN_FRONTEND=noninteractive
 ENV JAVA_HOME=/usr/lib/jvm/jdk1.8
 ENV MW_HOME=/weblogic/wls12130
 
+VOLUME /weblogic/domains/mydomain
+
 RUN apt-get update && \
     /weblogic/install_jvm.sh && \
     /weblogic/build_image.sh && \
@@ -16,6 +18,10 @@ RUN apt-get update && \
     rm -rf /var/lib/{apt,dpkg,cache,log}/ && \
     rm -rf /var/tmp/* && \
     rm -rf /tmp/*
-    
+
+ADD docker_files/configure.sh  /weblogic/wls12130/ 
+ADD docker_files/wlst.sh /weblogic/wls12130/oracle_common/common/bin/wlst.sh
+
+RUN chmod 755 /weblogic/wls12130/oracle_common/common/bin/wlst.sh
 
 ENTRYPOINT /weblogic/entrypoint.sh
