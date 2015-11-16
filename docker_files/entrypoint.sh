@@ -1,4 +1,13 @@
 #!/bin/bash
+
+if [ "$(ls -A $MW_HOME)" ]; then
+     echo "No action $MW_HOME is not Empty"
+     
+else
+    echo "Take action $MW_HOME is not Empty"
+    /weblogic/build_image.sh
+fi
+
 set -e
 
 if [ "$#" -gt 0 ]; then
@@ -20,7 +29,9 @@ fi
 
 $MW_HOME/wlserver/server/bin/setWLSEnv.sh
 
-if [ -d "$DOMAIN_DIR/$DOMAIN_NAME" ] ; then
+if [ "$(ls -A $DOMAIN_DIR/$DOMAIN_NAME)" ] ; then
+  echo "Domain $DOMAIN_DIR/$DOMAIN_NAME already exists. Using it."		
+else
   echo "Creating domain..."
 
 	if [ -z "$SERVER_START_MODE" ]; then
@@ -37,7 +48,13 @@ if [ -d "$DOMAIN_DIR/$DOMAIN_NAME" ] ; then
 
   mkdir -p $DOMAIN_DIR/$DOMAIN_NAME
 	set +e
-  $MW_HOME/wlserver/common/bin/wlst.sh /weblogic/myDomain.py
+
+        if [ ! -f "$MW_HOME/exported_domain.jar" ] ; then
+		$MW_HOME/wlserver/common/bin/wlst.sh /weblogic/myDomain.py
+	else
+		$MW_HOME/oracle_common/common/bin/unpack.sh -template=$MW_HOME/exported_domain.jar -domain=$DOMAIN_DIR/$DOMAIN_NAME	
+        fi
+  
 	if [ $? -ne 0 ]; then
 		echo "Failed to create domain $DOMAIN_DIR/$DOMAIN_NAME."
 		rm -rf $DOMAIN_DIR/$DOMAIN_NAME

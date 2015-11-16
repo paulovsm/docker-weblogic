@@ -37,6 +37,7 @@ weblogic_passwd = os.environ["WEBLOGIC_PASSWD"]
 #=======================================================================================
 print 'Reading template... '
 readTemplate("/weblogic/wls12130/wlserver/common/templates/wls/wls.jar")
+#readTemplate("/weblogic/blodes_domain.jar")
 
 #=======================================================================================
 # Configure the Administration Server and SSL port.
